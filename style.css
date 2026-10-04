@@ -380,7 +380,6 @@ body {
   border-radius: var(--radius);
   background: var(--color-surface);
   transition: box-shadow var(--transition), transform var(--transition);
-  role: listitem;
 }
 
 .transaction-item:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
