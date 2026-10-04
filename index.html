@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SpendWise – Smart Expense Tracker. Track income, expenses, and budgets in your browser." />
+  <title>SpendWise – Smart Expense Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ====== HEADER ====== -->
+  <header class="app-header" role="banner">
+    <div class="header-inner">
+      <div class="app-brand">
+        <span class="brand-icon" aria-hidden="true">💰</span>
+        <span class="brand-name">SpendWise</span>
+        <span class="brand-tagline">Smart Expense Tracker</span>
+      </div>
+      <nav class="app-nav" aria-label="Main navigation">
+        <button type="button" class="nav-btn active" data-tab="dashboard" aria-current="page">
+          <span aria-hidden="true">📊</span> Dashboard
+        </button>
+        <button type="button" class="nav-btn" data-tab="add-transaction">
+          <span aria-hidden="true">➕</span> Add Transaction
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main" id="main-content">
+
+    <!-- ====== TAB: DASHBOARD ====== -->
+    <div id="tab-dashboard" class="tab-panel" role="tabpanel" aria-label="Dashboard">
+
+      <!-- SUMMARY CARDS -->
+      <section class="summary-section" aria-label="Financial summary">
+        <div aria-live="polite" aria-atomic="true" class="sr-only" id="summary-announcement"></div>
+        <div class="cards-grid">
+          <article class="summary-card card-income" aria-label="Total income">
+            <div class="card-icon" aria-hidden="true">📈</div>
+            <div class="card-body">
+              <p class="card-label">Total Income</p>
+              <p class="card-value" id="total-income">$0.00</p>
+            </div>
+          </article>
+          <article class="summary-card card-expense" aria-label="Total expenses">
+            <div class="card-icon" aria-hidden="true">📉</div>
+            <div class="card-body">
+              <p class="card-label">Total Expenses</p>
+              <p class="card-value" id="total-expenses">$0.00</p>
+            </div>
+          </article>
+          <article class="summary-card card-balance" aria-label="Available balance">
+            <div class="card-icon" aria-hidden="true">💳</div>
+            <div class="card-body">
+              <p class="card-label">Available Balance</p>
+              <p class="card-value" id="total-balance">$0.00</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- BUDGET SECTION -->
+      <section class="budget-section" aria-label="Monthly budget">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span aria-hidden="true">🎯</span> Monthly Budget
+            <span id="budget-month-label" class="month-label"></span>
+          </h2>
+        </div>
+        <div class="budget-content">
+          <div class="budget-form-row">
+            <label for="budget-input" class="budget-label">Set Budget for This Month (USD)</label>
+            <div class="budget-input-group">
+              <span class="input-prefix" aria-hidden="true">$</span>
+              <input
+                type="number"
+                id="budget-input"
+                class="budget-input"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                aria-describedby="budget-help"
+              />
+              <button type="button" id="save-budget-btn" class="btn btn-primary btn-sm">Save Budget</button>
+            </div>
+            <p id="budget-help" class="field-help">Enter your total spending limit for the current month.</p>
+          </div>
+          <div id="budget-display" class="budget-display" aria-live="polite" aria-atomic="true">
+            <p class="budget-no-data">No budget set for this month. Set one above to track your spending.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRANSACTION HISTORY -->
+      <section class="history-section" aria-label="Transaction history">
+        <div class="section-header">
+          <h2 class="section-title"><span aria-hidden="true">📋</span> Transaction History</h2>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filter-bar" role="search" aria-label="Filter transactions">
+          <div class="filter-group">
+            <label for="search-input" class="sr-only">Search transactions</label>
+            <input
+              type="search"
+              id="search-input"
+              class="filter-input search-input"
+              placeholder="🔍 Search by description…"
+              aria-label="Search transactions by description"
+            />
+          </div>
+          <div class="filter-group">
+            <label for="filter-type" class="sr-only">Filter by type</label>
+            <select id="filter-type" class="filter-input filter-select" aria-label="Filter by transaction type">
+              <option value="all">All Types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-category" class="sr-only">Filter by category</label>
+            <select id="filter-category" class="filter-input filter-select" aria-label="Filter by category">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TRANSACTION LIST -->
+        <div
+          id="transaction-list"
+          class="transaction-list"
+          role="list"
+          aria-label="Transactions"
+          aria-live="polite"
+          aria-atomic="false"
+        >
+          <!-- populated by script.js -->
+        </div>
+      </section>
+
+      <!-- CHARTS ROW -->
+      <div class="charts-row">
+
+        <!-- CATEGORY BREAKDOWN -->
+        <section class="chart-section" aria-label="Category breakdown">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span aria-hidden="true">🍩</span> Spending by Category
+              <span id="chart-month-label" class="month-label"></span>
+            </h2>
+          </div>
+          <div id="category-chart" class="category-chart" aria-live="polite" aria-atomic="true">
+            <!-- populated by script.js -->
+          </div>
+        </section>
+
+        <!-- MONTHLY SUMMARY -->
+        <section class="monthly-section" aria-label="Monthly summary">
+          <div class="section-header">
+            <h2 class="section-title"><span aria-hidden="true">📅</span> Monthly Summary</h2>
+          </div>
+          <div id="monthly-summary" class="monthly-summary" aria-live="polite" aria-atomic="true">
+            <!-- populated by script.js -->
+          </div>
+        </section>
+
+      </div><!-- /.charts-row -->
+
+    </div><!-- /#tab-dashboard -->
+
+    <!-- ====== TAB: ADD TRANSACTION ====== -->
+    <div id="tab-add-transaction" class="tab-panel hidden" role="tabpanel" aria-label="Add or edit transaction">
+
+      <section class="form-section" aria-label="Transaction form">
+        <div class="section-header">
+          <h2 class="section-title" id="form-title">
+            <span aria-hidden="true">➕</span> Add Transaction
+          </h2>
+        </div>
+
+        <form id="transaction-form" class="transaction-form" novalidate aria-label="Transaction form">
+          <input type="hidden" id="edit-id" value="" />
+
+          <div class="form-grid">
+
+            <!-- AMOUNT -->
+            <div class="form-group">
+              <label for="amount" class="form-label">
+                Amount <span class="required" aria-hidden="true">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-prefix" aria-hidden="true">$</span>
+                <input
+                  type="number"
+                  id="amount"
+                  name="amount"
+                  class="form-input"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0.00"
+                  required
+                  aria-required="true"
+                  aria-describedby="amount-error"
+                />
+              </div>
+              <span id="amount-error" class="field-error" role="alert" aria-live="assertive"></span>
+            </div>
+
+            <!-- TYPE -->
+            <div class="form-group">
+              <label for="type" class="form-label">
+                Type <span class="required" aria-hidden="true">*</span>
+              </label>
+              <select
+                id="type"
+                name="type"
+                class="form-input form-select"
+                required
+                aria-required="true"
+                aria-describedby="type-error"
+              >
+                <option value="">Select type…</option>
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+              <span id="type-error" class="field-error" role="alert" aria-live="assertive"></span>
+            </div>
+
+            <!-- CATEGORY -->
+            <div class="form-group">
+              <label for="category" class="form-label">
+                Category <span class="required" aria-hidden="true">*</span>
+              </label>
+              <select
+                id="category"
+                name="category"
+                class="form-input form-select"
+                required
+                aria-required="true"
+                aria-describedby="category-error"
+              >
+                <option value="">Select type first…</option>
+              </select>
+              <span id="category-error" class="field-error" role="alert" aria-live="assertive"></span>
+            </div>
+
+            <!-- DATE -->
+            <div class="form-group">
+              <label for="date" class="form-label">
+                Date <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                class="form-input"
+                required
+                aria-required="true"
+                aria-describedby="date-error"
+              />
+              <span id="date-error" class="field-error" role="alert" aria-live="assertive"></span>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="form-group form-group--full">
+              <label for="description" class="form-label">Description</label>
+              <input
+                type="text"
+                id="description"
+                name="description"
+                class="form-input"
+                maxlength="100"
+                placeholder="Optional note…"
+                aria-describedby="description-help"
+              />
+              <p id="description-help" class="field-help">Optional. Max 100 characters.</p>
+            </div>
+
+          </div><!-- /.form-grid -->
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+              Add Transaction
+            </button>
+            <button type="button" class="btn btn-secondary btn-lg" id="cancel-edit-btn" style="display:none;">
+              Cancel Edit
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+    </div><!-- /#tab-add-transaction -->
+
+  </main>
+
+  <footer class="app-footer" role="contentinfo">
+    <p>SpendWise &mdash; All data stored locally in your browser. No data is sent to any server.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "SpendWise File Structure Validator",
+      "trigger": "PostToolUse",
+      "matcher": "fsWrite|strReplace|fsAppend",
+      "description": "After any file write, checks that the three required application files exist and warns if additional JS/CSS/HTML files are created outside the allowed paths.",
+      "action": {
+        "type": "agent",
+        "prompt": "Check that the following three files exist in the workspace root of kiro-university-project: index.html, style.css, script.js. If any are missing, report which file is missing and which task it corresponds to in tasks.md. Also verify no additional .html, .css, or .js files exist outside of .kiro/ directories. Report findings concisely."
+      }
+    },
+    {
+      "name": "SpendWise Accessibility Checker",
+      "trigger": "PostToolUse",
+      "matcher": "fsWrite|strReplace",
+      "description": "After writing to index.html or style.css, checks for common accessibility issues.",
+      "action": {
+        "type": "agent",
+        "prompt": "If the file just written is index.html, check: (1) every <input> and <select> has an associated <label> with matching for/id, (2) buttons have descriptive text or aria-label, (3) dynamic regions have aria-live attributes, (4) form error containers have id attributes for aria-describedby references. Report any violations found."
+      }
+    },
+    {
+      "name": "SpendWise Spec Compliance Check",
+      "trigger": "PostToolUse",
+      "matcher": "fsWrite|strReplace",
+      "description": "After writing to script.js, verifies alignment with the design document.",
+      "action": {
+        "type": "agent",
+        "prompt": "If the file just written is script.js, verify: (1) 'use strict' is present, (2) localStorage operations are wrapped in try/catch, (3) no var declarations are used, (4) calculations use stored data not DOM values, (5) the STORAGE_KEY constant is defined. Report any missing items."
+      }
+    }
+  ]
+}
